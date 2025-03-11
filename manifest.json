@@ -1,0 +1,50 @@
+{
+  "name": "Sonax Conector",
+  "author": {
+    "name": "Sonavoip Telecomunicações",
+    "email": "noc@sonavoip.com.br"
+  },
+  "defaultLocale": "en",
+  "private": false,
+  "sellOnly": true,
+  "version": "1.0",
+  "frameworkVersion": "2.0",
+  "requirements": {
+    "zaf_client": "2.0"
+  },
+  "location": {
+    "sell": {
+      "lead_card": {
+        "url": "assets/iframe.html",
+        "flexible": true
+    }
+  }
+},
+  "parameters": [
+    {
+      "name": "token_sonax",
+      "type": "text",
+      "required": true,
+      "label": "Token Sonax"
+    },
+    {
+      "name": "client_id_zendesk",
+      "type": "text",
+      "required": true,
+      "label": "Client ID Zendesk"
+    },
+    {
+      "name": "client_secret_zendesk",
+      "type": "text",
+      "required": true,
+      "label": "Client Secret Zendesk"
+    },
+    {
+      "name": "url_zendesk",
+      "type": "text",
+      "required": true,
+      "label": "URL Zendesk"
+    }
+  ]
+}
+
