@@ -1,322 +1,331 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <title>App Ligar Sonax</title>
-  <script src="https://static.zdassets.com/zendesk_app_framework_sdk/2.0/zaf_sdk.min.js"></script>
-  <style>
-    body, html {
-      height: 100%;
-      margin: 0;
-      padding: 0;
-      font-family: Arial, sans-serif;
-    }
-    .app-container {
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-end;
-      align-items: center;
-      height: 100%;
-      padding: 20px;
-      box-sizing: border-box;
-    }
-    .telefone-icon {
-      width: 150px;
-      height: auto;
-      margin-bottom: 15px;
-    }
-    .btn-ligar {
-      padding: 14px 30px;
-      background-color: #00aaff;
-      color: white;
-      border: none;
-      border-radius: 12px;
-      cursor: pointer;
-      font-size: 18px;
-      margin-top: 15px;
-      margin-bottom: 60px;
-    }
-    .btn-ligar:hover {
-      background-color: #0088cc;
-    }
-    .aviso-temporario {
-      position: fixed;
-      bottom: 10px;
-      left: 50%;
-      transform: translateX(-50%);
-      padding: 10px;
-      background-color: #f4e03a;
-      color: black;
-      border-radius: 5px;
-      text-align: center;
-      font-size: 14px;
-      display: none;
-      width: 90%;
-      max-width: 300px;
-    }
-    .ramal-container {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      margin-bottom: 15px;
-      width: 100%;
-      max-width: 150px;
-    }
-    .ramal-container input {
-      padding: 8px;
-      font-size: 14px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-      margin-top: 8px;
-      width: 100%;
-    }
-    .ramal-container button {
-      padding: 6px 11px;
-      margin-top: 8px;
-      background-color: #28a745;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      width: 75%;
-      font-size: 14px;
-    }
-    .ramal-container button:hover {
-      background-color: #218838;
-    }
-    .ramal-display {
-      margin: 15px 0;
-      font-size: 14px;
-      color: #555;
-      text-align: center;
-    }
-    .edit-ramal {
-      background: none;
-      border: none;
-      color: #00aaff;
-      cursor: pointer;
-      font-size: 12px;
-      text-decoration: underline;
-      margin-top: 5px;
-    }
-    .edit-ramal:hover {
-      color: #0088cc;
-    }
-    [data-field-name="ramais"] {
-      display: none !important;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <title>Sonax Conector Zendesk</title>
+    <script src="https://static.zdassets.com/zendesk_app_framework_sdk/2.0/zaf_sdk.min.js"></script>
+    <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+        .app-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            padding: 5px;
+            box-sizing: border-box;
+        }
+        .telefone-icon {
+            width: 120px;
+            height: auto;
+            margin-bottom: 5px;
+        }
+        .btn-ligar {
+            padding: 12px 24px;
+            background-color: #00aaff;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 5px;
+            margin-bottom: 5px;
+        }
+        .btn-ligar:hover {
+            background-color: #0088cc;
+        }
+        .aviso-temporario {
+            position: fixed;
+            bottom: 5px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 5px;
+            background-color: #f4e03a;
+            color: black;
+            border-radius: 5px;
+            text-align: center;
+            font-size: 12px;
+            display: none;
+            width: 90%;
+            max-width: 200px;
+        }
+        .footer {
+            position: absolute;
+            bottom: 5px;
+            font-size: 10px;
+            color: #666;
+            text-align: center;
+        }
+        .footer a {
+            color: #00aaff;
+            text-decoration: none;
+        }
+        .footer a:hover {
+            text-decoration: underline;
+        }
+        .input-container {
+            width: 90%;
+            max-width: 200px;
+            margin: 5px 0;
+        }
+        .input-numero {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 14px;
+            text-align: center;
+        }
+        .input-label {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 3px;
+            text-align: center;
+            display: block;
+        }
+    </style>
 </head>
 <body>
 <div class="app-container">
-  <img src="https://sonax.net.br/wp-content/uploads/2023/05/CorAzul-TipoHorizontal.png" alt="Sonax" class="telefone-icon">
-  <div id="ramalContainer" class="ramal-container">
-    <label for="ramalInput">Seu Ramal:</label>
-    <input type="text" id="ramalInput" placeholder="Digite seu ramal">
-    <button id="salvarRamalBtn">Salvar</button>
-  </div>
-  <div id="ramalDisplay" class="ramal-display" style="display: none;">
-    Ramal atual: <span id="currentRamal"></span>
-    <button id="editRamalBtn" class="edit-ramal">Editar</button>
-  </div>
-  <button id="ligarSonaxBtn" class="btn-ligar">Ligar Sonax</button>
-  <div id="aviso" class="aviso-temporario"></div>
+    <img src="https://sonax.net.br/wp-content/uploads/2023/05/CorAzul-TipoHorizontal.png" alt="Sonax" class="telefone-icon">
+    <div class="input-container">
+        <label for="numero_alternativo" class="input-label">Digite um número alternativo:</label>
+        <input type="tel" id="numero_alternativo" class="input-numero" placeholder="Ex: (11) 98765-4321">
+    </div>
+    <button id="ligarBtn" class="btn-ligar">Ligar</button>
+    <div id="aviso" class="aviso-temporario"></div>
+</div>
+<div class="footer">
+    Desenvolvido pela <a href="https://www.sonax.net.br" target="_blank">Sonavoip</a>
 </div>
 
 <script>
-  const client = ZAFClient.init();
-  const STORAGE_KEY_RAMAL = 'sonax_user_ramal_';
-  const STORAGE_KEY_TOKEN = 'sonax_token_';
+    const client = ZAFClient.init();
+    const STORAGE_KEY_TOKEN = 'sonax_token_';
+    const WEBHOOK_URL = 'https://n8n.sonax.io/webhook/465e768d-ae6e-4baa-a18b-46a4bd44ede8';
+    const LOG_WEBHOOK_URL = 'https://n8n.sonax.io/webhook/d80d6b9a-7401-42ad-bf60-6c76e82272e4';
 
-  function showTemporaryMessage(message, duration = 3000) {
-    const aviso = document.getElementById("aviso");
-    aviso.textContent = message;
-    aviso.style.display = "block";
-    setTimeout(() => aviso.style.display = "none", duration);
-  }
-
-  (async function () {
-    const hideRamaisField = () => {
-      const ramaisField = document.querySelector('[data-field-name="ramais"]');
-      if (ramaisField) {
-        ramaisField.style.display = 'none';
-      }
-    };
-    hideRamaisField();
-    client.on('app.activated', hideRamaisField);
-
-    client.invoke('resize', { width: '100%', height: '350px' });
-    
-    const userId = await getUserId();
-    let savedRamal = await getUserExtension(userId);
-    updateRamalDisplay(savedRamal);
-    if (savedRamal) {
-      document.getElementById("ramalInput").value = savedRamal;
+    function showTemporaryMessage(message, duration) {
+        const aviso = document.getElementById("aviso");
+        aviso.textContent = message;
+        aviso.style.display = "block";
+        setTimeout(() => aviso.style.display = "none", duration);
     }
 
-    // Verificar e salvar o token
-    await checkAndSaveToken();
-
-    document.getElementById("salvarRamalBtn").addEventListener("click", async function () {
-      const novoRamal = document.getElementById("ramalInput").value.trim();
-      if (novoRamal) {
-        updateRamalDisplay(novoRamal);
-        showTemporaryMessage("Ramal salvo com sucesso!");
-        saveUserExtension(userId, novoRamal);
-      }
-    });
-
-    document.getElementById("editRamalBtn").addEventListener("click", function() {
-      document.getElementById("ramalDisplay").style.display = "none";
-      document.getElementById("ramalContainer").style.display = "flex";
-    });
-
-    document.getElementById("ligarSonaxBtn").addEventListener("click", async function () {
-      const ramal = await getUserExtension(userId);
-      if (!ramal) {
-        document.getElementById("ramalContainer").style.display = "flex";
-        showTemporaryMessage("Por favor, salve seu ramal primeiro.");
-        return;
-      }
-
-      client.get(["lead.mobile"]).then(async function (leadData) {
-        const leadMobile = leadData["lead.mobile"] || null;
-        if (!leadMobile) {
-          showTemporaryMessage("Erro: Número do lead não encontrado.");
-          return;
-        }
-
+    // Função para enviar logs ao webhook
+    async function sendLog(message, data = {}) {
         try {
-          const tokenSonax = await getTokenSonax();
-
-          if (!tokenSonax) {
-            showTemporaryMessage("Erro: Token Sonax não encontrado. Contate o suporte.");
-            return;
-          }
-
-          console.log("Disparando chamada para:", leadMobile, "usando ramal:", ramal);
-          showTemporaryMessage("Iniciando chamada...", 1500);
-          
-          setTimeout(() => showTemporaryMessage("Chamada iniciada com sucesso!", 2500), 1700);
-
-          const callUrl = `https://click2call.sonax.net.br/sonax-click2call.php?numero=${leadMobile}&ramal=${ramal}&token=${tokenSonax}&id_contato=${userId}`;
-          const response = await fetch(callUrl, { method: "GET" });
-
-
-          if (!response.ok) {
-            console.error("Erro na requisição:", response.status, response.statusText);
-            showTemporaryMessage(`Erro na conexão com o servidor: ${response.status} ${response.statusText}`);
-            return;
-          }
-
-
+            const logPayload = {
+                timestamp: new Date().toISOString(),
+                message: message,
+                data: data,
+                source: 'Sonax Conector Zendesk'
+            };
+            await fetch(LOG_WEBHOOK_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(logPayload)
+            });
         } catch (error) {
-          console.error("Erro ao iniciar chamada:", error);
-          showTemporaryMessage("Erro ao iniciar chamada. Contate o suporte.");
+            // Silenciosamente ignora erros de envio de log para não impactar o fluxo principal
         }
-      }).catch(function (error) {
-        console.error("Erro ao obter os dados do lead:", error);
-        showTemporaryMessage("Erro ao obter os dados do lead.");
-      });
-    });
-  })();
-
-  async function checkAndSaveToken() {
-    try {
-      const metadata = await client.metadata();
-      if (metadata && metadata.settings && metadata.settings.token_sonax) {
-        const token = metadata.settings.token_sonax;
-        localStorage.setItem(STORAGE_KEY_TOKEN, token);
-        console.log("Token Sonax salvo localmente.");
-      } else {
-        console.error("Token Sonax não encontrado nas configurações.");
-      }
-    } catch (error) {
-      console.error("Erro ao verificar e salvar o token:", error);
     }
-  }
 
-  async function getTokenSonax() {
-    return localStorage.getItem(STORAGE_KEY_TOKEN);
-  }
-
-  async function getUserId() {
-    try {
-      const context = await client.context();
-      return context.currentUser.id;
-    } catch (error) {
-      console.error("Erro ao obter o ID do usuário:", error);
-      return null;
+    async function getCurrentUserEmail() {
+        try {
+            const currentUser = await client.get('currentUser');
+            if (currentUser && currentUser.currentUser && currentUser.currentUser.email) {
+                await sendLog("Email do usuário atual", { email: currentUser.currentUser.email });
+                return currentUser.currentUser.email;
+            } else {
+                throw new Error("Não foi possível obter o email do usuário atual");
+            }
+        } catch (error) {
+            await sendLog("Erro ao obter email do usuário atual", { error: error.message });
+            throw error;
+        }
     }
-  }
 
-  function saveRamalToLocalStorage(userId, ramal) {
-    localStorage.setItem(STORAGE_KEY_RAMAL + userId, ramal);
-    return true;
-  }
+    async function getZendeskUserData() {
+        try {
+            const metadata = await client.metadata();
+            const zendeskApiToken = metadata.settings.api_config;
+            if (!zendeskApiToken) {
+                throw new Error("Token da API do Zendesk não encontrado.");
+            }
 
-  function getRamalFromLocalStorage(userId) {
-    return localStorage.getItem(STORAGE_KEY_RAMAL + userId);
-  }
+            const currentUserEmail = await getCurrentUserEmail();
 
-  async function getStoredExtensions() {
-    try {
-      const metadata = await client.metadata();
-      return metadata.settings.ramais ? JSON.parse(metadata.settings.ramais) : {};
-    } catch (error) {
-      console.error("Erro ao obter extensões:", error);
-      return {};
+            const username = `${currentUserEmail}/token`;
+            const credentials = btoa(`${username}:${zendeskApiToken}`);
+
+            const response = await client.request({
+                url: '/api/v2/users/me.json',
+                type: 'GET',
+                contentType: 'application/json',
+                httpCompleteResponse: true,
+                headers: {
+                    'Authorization': `Basic ${credentials}`
+                }
+            });
+
+            if (response.status !== 200) {
+                throw new Error(`Erro na requisição à API do Zendesk: ${response.status} ${response.statusText}`);
+            }
+
+            const userData = response.responseJSON.user;
+            userData.current_user_email = currentUserEmail;
+
+            return userData;
+        } catch (error) {
+            await sendLog("Erro ao obter dados do usuário do Zendesk", { error: error.message });
+            throw error;
+        }
     }
-  }
 
-  async function saveUserExtension(userId, ramal) {
-    saveRamalToLocalStorage(userId, ramal);
-    try {
-      const extensions = await getStoredExtensions();
-      extensions[userId] = ramal;
-      const appId = await getAppId();
-      await client.request({
-        url: `/api/v2/apps/installations/${appId}/settings`,
-        type: "PUT",
-        contentType: "application/json",
-        data: JSON.stringify({ settings: { ramais: JSON.stringify(extensions) } })
-      });
-    } catch (error) {
-      console.warn("Erro ao salvar nas configurações do app:", error);
+    async function getUserCliente(contactId) {
+        try {
+            const userData = await client.request({ url: `/api/v2/users/${contactId}`, type: 'GET' });
+            let phoneNumber = userData.user.phone || userData.user.mobile ||
+                (userData.user.identities && userData.user.identities.find(i => i.type === 'phone_number')?.value);
+
+            if (!phoneNumber && userData.user.user_fields) {
+                phoneNumber = userData.user.user_fields.phone_number || phoneNumber;
+            }
+
+            return {
+                id: userData.user.id,
+                name: userData.user.name,
+                phone: phoneNumber || null,
+                email: userData.user.email || null
+            };
+        } catch (error) {
+            await sendLog("Erro ao obter dados do cliente", { error: error.message });
+            throw error;
+        }
     }
-  }
 
-  async function getAppId() {
-    try {
-      const metadata = await client.metadata();
-      if (!metadata.installationId) {
-        throw new Error("ID da instalação não encontrado nos metadados.");
-      }
-      return metadata.installationId;
-    } catch (error) {
-      console.error("Erro ao obter o ID da instalação:", error);
-      throw error;
+    (async function () {
+        await checkAndSaveSettings();
+
+        const context = await client.context();
+        if (context.location === "ticket_sidebar") {
+            client.invoke('resize', { width: '100%', height: '250px' });
+        } else if (context.location === "user_sidebar") {
+            client.invoke('resize', { width: '100%', height: '250px' });
+        }
+
+        document.getElementById("ligarBtn").addEventListener("click", async () => {
+            try {
+                const user_atendente = await getZendeskUserData();
+                await sendLog("Usuário atendente", { user_atendente });
+
+                const context = await client.context();
+                let contactId = null;
+                let ticketId = null;
+
+                if (context.location === 'ticket_sidebar') {
+                    const ticketData = await client.get('ticket');
+                    if (ticketData && ticketData.ticket && ticketData.ticket.requester) {
+                        contactId = ticketData.ticket.requester.id;
+                        ticketId = ticketData.ticket.id;
+                    }
+
+                    if (!ticketId) {
+                        showTemporaryMessage("Não foi possível obter o ID do ticket.", 2000);
+                        return;
+                    }
+                } else if (context.location === 'user_sidebar') {
+                    const userData = await client.get('user');
+                    if (userData && userData.user) {
+                        contactId = userData.user.id;
+                    }
+                }
+
+                if (!contactId) {
+                    showTemporaryMessage("Não foi possível obter o ID do contato.", 2000);
+                    return;
+                }
+
+                const user_cliente = await getUserCliente(contactId);
+                if (!user_cliente.phone) {
+                    showTemporaryMessage("Número de telefone do cliente não encontrado.", 2000);
+                    return;
+                }
+
+                const tokenSonax = await getTokenSonax();
+                if (!tokenSonax) {
+                    showTemporaryMessage("Token Sonax não encontrado.", 2000);
+                    return;
+                }
+
+                const numeroAlternativo = document.getElementById("numero_alternativo").value.trim();
+
+                showTemporaryMessage("Iniciando chamada...", 900);
+                setTimeout(() => showTemporaryMessage("Chamada iniciada com sucesso!", 1000), 1200);
+
+                const payload = {
+                    user_cliente: user_cliente,
+                    user_atendente: user_atendente,
+                    token: tokenSonax,
+                    num_dif: numeroAlternativo || null
+                };
+
+                if (ticketId) {
+                    payload.ticket_id = ticketId;
+                }
+
+                await sendLog("Payload enviado", { payload });
+
+                const response = await fetch(WEBHOOK_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    await sendLog("Erro na requisição", { status: response.status, statusText: response.statusText });
+                    showTemporaryMessage("Erro ao iniciar a chamada.", 2000);
+                    return;
+                }
+
+                try {
+                    const callId = await response.text();
+                    await sendLog("Chamada iniciada, ID", { callId });
+                } catch (error) {
+                    await sendLog("Erro ao processar resposta do servidor", { error: error.message });
+                    showTemporaryMessage("Erro ao processar resposta do servidor.", 2000);
+                }
+            } catch (error) {
+                await sendLog("Erro ao iniciar chamada", { error: error.message });
+                showTemporaryMessage("Erro ao iniciar a chamada.", 2000);
+            }
+        });
+    })();
+
+    async function checkAndSaveSettings() {
+        try {
+            const metadata = await client.metadata();
+            if (metadata && metadata.settings) {
+                if (metadata.settings.token_sonax) localStorage.setItem(STORAGE_KEY_TOKEN, metadata.settings.token_sonax);
+            }
+        } catch (error) {
+            await sendLog("Erro ao verificar e salvar configurações", { error: error.message });
+        }
     }
-  }
 
-  async function getUserExtension(userId) {
-    const localRamal = getRamalFromLocalStorage(userId);
-    if (localRamal) return localRamal;
-    const extensions = await getStoredExtensions();
-    return extensions[userId] || null;
-  }
-
-  function updateRamalDisplay(ramal) {
-    if (ramal) {
-      document.getElementById("currentRamal").textContent = ramal;
-      document.getElementById("ramalDisplay").style.display = "block";
-      document.getElementById("ramalContainer").style.display = "none";
-    } else {
-      document.getElementById("ramalDisplay").style.display = "none";
-      document.getElementById("ramalContainer").style.display = "flex";
+    async function getTokenSonax() {
+        return localStorage.getItem(STORAGE_KEY_TOKEN);
     }
-  }
+
+    window.showTemporaryMessage = showTemporaryMessage;
 </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9387d6dcaca6bcd8',t:'MTc0NjAyNDQ5OC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9399d96f3b3f68ca',t:'MTc0NjIxMzM0Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
 </body>
 </html>
-
